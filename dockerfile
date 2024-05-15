@@ -3,7 +3,12 @@ FROM python:3.10-slim AS builder
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install --user -r requirements.txt
+
+# Retry logic for pip install
+RUN set -eux; \
+    for i in 1 2 3; do \
+        pip install --user -r requirements.txt && break || sleep 10; \
+    done
 
 FROM python:3.10-slim
 
